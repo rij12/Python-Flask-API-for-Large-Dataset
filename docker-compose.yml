@@ -1,6 +1,21 @@
 web:
-  build: ./app
+  build: .
   ports:
    - "5000:5000"
+  links:
+   - postgres:postgres
   volumes:
    - .:/app
+
+postgres:
+  restart: always
+  image: postgres:latest
+  ports:
+    - "5432:5432"
+
+elasticsearch:
+  restart: always
+  image: elasticsearch
+  ports:
+    - 9200:9200
+    - 9300:9300
