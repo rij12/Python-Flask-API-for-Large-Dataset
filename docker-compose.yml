@@ -1,21 +1,20 @@
-web:
-  build: .
-  ports:
-   - "5000:5000"
-  links:
-   - postgres:postgres
-  volumes:
-   - .:/app
+version: '2'
 
-postgres:
-  restart: always
-  image: postgres:latest
-  ports:
-    - "5432:5432"
+services:
+  elasticsearch:
+    restart: always
+    image: elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
 
-elasticsearch:
-  restart: always
-  image: elasticsearch
-  ports:
-    - 9200:9200
-    - 9300:9300
+  # web:
+  #   build: .
+  #   restart: always
+  #   ports:
+  #   - "5000:5000"
+  #   volumes:
+  #   - .:/app
+  #   depends_on:
+  #     - elasticsearch
+

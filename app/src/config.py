@@ -1,6 +1,4 @@
-import os 
-
 config = {
-'DATABASE': os.environ['DATABASE_URL']
-
+    "db_port": 9200,
+    "db_host": "localhost",
 }

@@ -1,5 +1,5 @@
 import unittest
-
+import requests
 
 
 """
@@ -15,6 +15,9 @@ GET ALL - Gets all the username available
 class TestCalculateIOU(unittest.TestCase):
 
     def __init__(self):
+        """
+        Loads test data into a elasticSearch instance
+        """
         pass
 
     def test_GET_ALL(self):

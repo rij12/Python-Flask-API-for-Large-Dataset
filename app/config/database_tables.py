@@ -1,1 +1,0 @@
-person_table = " CREATE TABLE people ()"

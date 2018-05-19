@@ -2,13 +2,10 @@ from flask import Flask
 from pprint import pprint
 import sys, json, os
 import elasticsearch as es
-
-host = "localhost"
-port = 9200
-index_name = "people"
+from config import config
 
 app = Flask(__name__)
-client = es.Elasticsearch(hosts=[{'host': host, 'port': port}])
+client = es.Elasticsearch(hosts=[{'host': config['db_host'], 'port': config['db_port']}])
 
 
 # API functions 
@@ -58,7 +55,7 @@ def people():
     res = client.search(index='people', doc_type='profile', body=doc)
     return json.dumps(res)
 
-def loadData(data_file):
+def loadData(data_file, index_name):
     mappings = {
         "profile" : {
             "properties" : {
@@ -83,25 +80,37 @@ def loadData(data_file):
 
     # Create Index and people profile
     try:
-        client.indices.create(index=index_name, body=body)
+        client.indices.create(index="people", body=body)
     except es.exceptions.TransportError as e:
         if e.error != 'index_already_exists_exception':
             raise
-
+    data = None
     # Loads the json used in the first program argument
     with open(data_file) as json_data:
-        d = json.load(json_data)
-        pprint(d)
+        data = json.load(json_data)
 
-        for data in d:
-            client.index(index=index_name, doc_type='profile',
-                            body=data)
+        # for data in d:
+        #     client.index(index=index_name, doc_type='profile',
+        #                     body=data)
+    if data is None:  
+        sys.exit("Could not read data into elasticSearch")
+
+
+    # Bulk Importing to imrove the performance
+    bulk = ""
+
+    bulk = bulk + '{"_op_type": "index", "_index": "people", "_type": "profile, "doc" : "'+ str(data) +'"}\n'
+
+    # bulk = bulk + '{"_op_type": "delete", "_index": "index-name", "_type": "doc-type", "_id": "id-want-to-delete"}\n'
+
+    client.bulk( body=bulk )
+    
 
 
 if __name__ == '__main__':
     # Add argument handler here!
     # Check for a load flag is so then load the data to popluate elasticSearch
 
-    loadData(sys.argv[1])
+    loadData(sys.argv[1], "people")
     app.run(debug=True,host='0.0.0.0')
 
