@@ -85,25 +85,23 @@ def loadData(data_file, index_name):
     except es.exceptions.TransportError as e:
         if e.error != 'index_already_exists_exception':
             raise
+    
     json_docs = []
+    actions= []
     # Loads the json used in the first program argument
     with open(data_file) as json_data:
         json_docs = json.load(json_data)
-    pprint(json.dumps(json_docs))
-        # for data in d:
-        #     client.index(index=index_name, doc_type='profile',
-        #                     body=data)
-    # if data is None:  
-    #     sys.exit("Could not read data into elasticSearch")
 
-    # Bulk Importing to imrove the performance
-    bulk = ""
-    # values = ','.join(str(v) for v in json_docs)
-    bulk = bulk + '{"_op_type": "index", "_index": "people", "_type": "profile", "doc" : "'+ json.dumps(json_docs) +'"}\n'
+    for the_instance in json_docs:
+            actions.append({
+                "_index": 'people',
+                "_type": 'profile',
+                "_source": the_instance
+            })
+    # Bulk load to btach import the json to elasticsearch, to reduce overhead from making network requests. 
+    r, _ = helpers.bulk(client, actions, index='people', doc_type='profile', refresh=True)
+    print("Inserted: {} documents".format(r))
 
-    # bulk = bulk + '{"_op_type": "delete", "_index": "index-name", "_type": "doc-type", "_id": "id-want-to-delete"}\n'
-    # client.bulk(True, "profile", values) 
-    client.bulk( body=bulk )
     
 
 
