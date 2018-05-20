@@ -2,6 +2,7 @@ from flask import Flask
 from pprint import pprint
 import sys, json, os
 import elasticsearch as es
+from elasticsearch import helpers
 from config import config
 
 app = Flask(__name__)
@@ -84,25 +85,24 @@ def loadData(data_file, index_name):
     except es.exceptions.TransportError as e:
         if e.error != 'index_already_exists_exception':
             raise
-    data = None
+    json_docs = []
     # Loads the json used in the first program argument
     with open(data_file) as json_data:
-        data = json.load(json_data)
-
+        json_docs = json.load(json_data)
+    pprint(json.dumps(json_docs))
         # for data in d:
         #     client.index(index=index_name, doc_type='profile',
         #                     body=data)
-    if data is None:  
-        sys.exit("Could not read data into elasticSearch")
-
+    # if data is None:  
+    #     sys.exit("Could not read data into elasticSearch")
 
     # Bulk Importing to imrove the performance
     bulk = ""
-
-    bulk = bulk + '{"_op_type": "index", "_index": "people", "_type": "profile, "doc" : "'+ str(data) +'"}\n'
+    # values = ','.join(str(v) for v in json_docs)
+    bulk = bulk + '{"_op_type": "index", "_index": "people", "_type": "profile", "doc" : "'+ json.dumps(json_docs) +'"}\n'
 
     # bulk = bulk + '{"_op_type": "delete", "_index": "index-name", "_type": "doc-type", "_id": "id-want-to-delete"}\n'
-
+    # client.bulk(True, "profile", values) 
     client.bulk( body=bulk )
     
 
