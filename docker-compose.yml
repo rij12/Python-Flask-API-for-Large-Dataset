@@ -8,13 +8,16 @@ services:
       - 9200:9200
       - 9300:9300
 
-  # web:
-  #   build: .
-  #   restart: always
-  #   ports:
-  #   - "5000:5000"
-  #   volumes:
-  #   - .:/app
-  #   depends_on:
-  #     - elasticsearch
+  web:
+    build: .
+    restart: always
+    ports:
+    - "5000:5000"
+    volumes:
+    - .:/app
+    depends_on:
+      - elasticsearch
+    environment:
+    - db_host=elasticsearch
+    - db_port=9200
 

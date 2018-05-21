@@ -12,7 +12,7 @@ GET ALL - Gets all the username available
 
 """
 
-class TestCalculateIOU(unittest.TestCase):
+class TestPeopleApi(unittest.TestCase):
 
     def __init__(self):
         """

@@ -3,11 +3,10 @@ from pprint import pprint
 import sys, json, os
 import elasticsearch as es
 from elasticsearch import helpers
-from config import config
 import argparse
 
 app = Flask(__name__)
-client = es.Elasticsearch(hosts=[{'host': config['db_host'], 'port': config['db_port']}])
+client = es.Elasticsearch(hosts=[{'host': os.environ['db_host'], 'port': os.environ['db_port']}])
 
 
 # API functions 
@@ -64,9 +63,10 @@ def people():
     }
     res = client.search(index='people', doc_type='profile', body=doc)
 
-    return jsonify(res)
+    return jsonify(**res)
 
 def loadData(data_file, index_name):
+    
     mappings = {
         "profile" : {
             "properties" : {
@@ -109,6 +109,7 @@ def loadData(data_file, index_name):
                 "_source": the_instance
             })
     # Bulk load to btach import the json to elasticsearch, to reduce overhead from making network requests. 
+    # Relies of python to close connection.
     r, _ = helpers.bulk(client, actions, index=index_name, doc_type='profile', refresh=True)
     print("Inserted: {} documents".format(r))
 
@@ -134,7 +135,7 @@ if __name__ == '__main__':
         print(args.load, args.index)
         loadData(args.load, args.index)
 
-    app.run(debug=True,host='0.0.0.0')
+    app.run(debug=False,host='0.0.0.0')
 
 
  

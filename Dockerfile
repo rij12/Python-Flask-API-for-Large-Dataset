@@ -12,4 +12,4 @@ WORKDIR /server
 RUN pip3 install -r requirements.txt
 EXPOSE  5000
 WORKDIR /server/app/src/
-CMD ["python3", "app.py", "../../data/fake_profiles.json"]
+CMD ["python3", "app.py", "--load", "../../data/fake_profiles.json", "--index", "people"]
