@@ -17,6 +17,8 @@ services:
     - .:/app
     depends_on:
       - elasticsearch
+    links:
+      - elasticsearch
     environment:
     - db_host=elasticsearch
     - db_port=9200

@@ -3,6 +3,11 @@ CACI Interview
 
 # Install
 
-# Design Choices 
+'''
+chmod +x run.sh
+./run.sh
+'''
+# Limitataions
 
-# Data Injest
+It loads the whole file into RAM, would need to stream it or batch load the data.
+

@@ -63,7 +63,7 @@ def people():
     }
     res = client.search(index='people', doc_type='profile', body=doc)
 
-    return jsonify(**res)
+    return jsonify(res)
 
 def loadData(data_file, index_name):
     
@@ -131,7 +131,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    if args.load is not None and args.index is not None:
+    if args.load is not None and args.index is not None and client is not None:
         print(args.load, args.index)
         loadData(args.load, args.index)
 
