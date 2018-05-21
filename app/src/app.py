@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from pprint import pprint
 import sys, json, os
 import elasticsearch as es
@@ -25,7 +25,7 @@ def searchAll(id):
     }
         
     res = client.search(index='people', doc_type='profile', body=doc)
-    return json.dumps(res)
+    return jsonify(res)
 
 # Delete a Person using their username
 @app.route('/people/<string:id>', methods=['DELETE'])
@@ -42,19 +42,27 @@ def DELETE_PEOPLE(id):
         }
     }
     res = client.delete_by_query(index="people",doc_type="profile", body=doc)
-    return json.dumps(res)
+    return jsonify(res)
      
 
 #  Get all the people
 @app.route('/people', methods=['GET'])
 def people():
+        # here we want to get the value of user (i.e. ?user=some-value)
+    page = request.args.get('page')
+    print(page)
+
+    if page is None:
+        page=0
     doc = {
+            "from" : page, "size" : 10,
             'query': {
                 'match_all' : {}
         }
     }
     res = client.search(index='people', doc_type='profile', body=doc)
-    return json.dumps(res)
+
+    return jsonify(res)
 
 def loadData(data_file, index_name):
     mappings = {
@@ -109,6 +117,6 @@ if __name__ == '__main__':
     # Add argument handler here!
     # Check for a load flag is so then load the data to popluate elasticSearch
 
-    loadData(sys.argv[1], "people")
+    # loadData(sys.argv[1], "people")
     app.run(debug=True,host='0.0.0.0')
 
