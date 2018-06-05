@@ -28,9 +28,6 @@ localhost:5000
 DELETE - '/people/<string:id>'
 GET - '/search/<string:id>'
 GET - '/people'
-
-
-
 ```
 
 # Limitataions
